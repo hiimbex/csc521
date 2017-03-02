@@ -40,7 +40,6 @@ def is_number(tok):
 #end utilities
 
 
-#<Program> -> <Statement> <Program> | <Statement>
 def Program(token_index):
     '''
     <Program> ->
