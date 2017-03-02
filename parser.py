@@ -18,7 +18,10 @@ pp = pprint.PrettyPrinter(indent=1, depth=100)
 # tokens = ["IDENT:X", "COMMA", "IDENT:7g", "COMMA", "IDENT:7", "COMMA", "EOF"]
 #<Name> LPAREN <FunctionCallParams>
 #tokens = ["IDENT:yolo", "COMMA", "IDENT:jskdb","RPAREN", "EOF"]
-tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HI", "RPAREN", "LBRACE", "RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "EOF"]
+tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HI", "RPAREN", "LBRACE",
+          "RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "VAR", "IDENT:X",
+          "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:Xg", "LPAREN", "IDENT:Xfsa",
+          "COMMA", "IDENT:hell", "RPAREN"]
 
 #begin utilities
 def is_ident(tok):
@@ -35,6 +38,50 @@ def is_number(tok):
     '''
     return -1 < tok.find("NUMBER")
 #end utilities
+
+
+#<Program> -> <Statement> <Program> | <Statement>
+def Program(token_index):
+    '''
+    <Program> ->
+        <Statement> <Program>
+        | <Statement>
+    '''
+    # <Statement> <Program>
+    (success, returned_index, returned_subtree) = Statement(token_index)
+    if success:
+        subtree = ["Program0", returned_subtree]
+        (success, returned_index, returned_subtree) = Program(returned_index + 1)
+        if success:
+            subtree.append(returned_subtree)
+            return [True, token_index, subtree]
+    # <Statement>
+    (success, returned_index, returned_subtree) = Statement(token_index)
+    if success:
+        return [True, returned_index, ["Program1", returned_subtree]]
+    return [False, token_index, []]
+
+
+def Statement(token_index):
+    '''
+    <Statement> ->
+        <FunctionDeclaration>
+        | <Assignment>
+        | <Print>
+    '''
+    # <FunctionDeclaration>
+    (success, returned_index, returned_subtree) = FunctionDeclaration(token_index)
+    if success:
+        return [True, returned_index, ["Statement0", returned_subtree]]
+    # <Assignment>
+    (success, returned_index, returned_subtree) = Assignment(token_index)
+    if success:
+        return [True, returned_index, ["Statement1", returned_subtree]]
+    # <Print>
+    (success, returned_index, returned_subtree) = Print(token_index)
+    if success:
+        return [True, returned_index, ["Statement2", returned_subtree]]
+    return [False, token_index, []]
 
 
 def FunctionDeclaration(token_index):
@@ -156,7 +203,7 @@ def MultipleAssignment(token_index):
             subtree = ["MultipleAssignment0", returned_subtree]
             if "ASSIGN" == tokens[returned_index]:
                 subtree.append(tokens[returned_index])
-                (success, returned_index, returned_subtree) = Expression(returned_index + 1)
+                (success, returned_index, returned_subtree) = FunctionCall(returned_index + 1)
                 if success:
                     subtree.append(returned_subtree)
                     return [True, returned_index, subtree]
@@ -483,4 +530,4 @@ def Number(token_index):
 
 if __name__ == '__main__':
     print("starting __main__")
-    pp.pprint(FunctionDeclaration(0))
+    pp.pprint(Program(0))
