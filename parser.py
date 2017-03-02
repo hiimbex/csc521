@@ -3,7 +3,7 @@ import pprint
 
 pp = pprint.PrettyPrinter(indent=1, depth=100)
 
-# tokens = ["VAR", "IDENT:X", "ASSIGN", "NUMBER:4"]
+tokens = ["VAR", "IDENT:X", "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:X", "ADD", "NUMBER:4", "EOF"]
 # tokens = ["SUB", "IDENT:X", "ADD", "NUMBER:4"]
 # tokens = ["SUB", "IDENT:X", "EXP", "NUMBER:4", "EOF"]
 # tokens = ["SUB", "IDENT:X", "EXP", "NUMBER:4", "EXP", "IDENT:X", "EOF"]
@@ -12,10 +12,11 @@ pp = pprint.PrettyPrinter(indent=1, depth=100)
 # tokens = ["NUMBER:9", "ADD", "IDENT:X", "SUB", "NUMBER:4", "EOF"]
 # tokens = ["NUMBER:9", "ADD", "LPAREN", "IDENT:X",
 #           "SUB", "NUMBER:4", "RPAREN", "EOF"]
-#tokens = ["PRINT", "LPAREN", "IDENT:X", "SUB", "NUMBER:4", "RPAREN", "EOF"]
-#tokens = ["IDENT:FOO", "LPAREN", "RPAREN", "EOF"]
-#tokens = ["IDENT:FOO", "LPAREN", "RPAREN", "COLON", "NUMBER:0", "EOF"]
-tokens = ["IDENT:X", "EOF"]
+# tokens = ["PRINT", "LPAREN", "IDENT:X", "SUB", "NUMBER:4", "RPAREN", "EOF"]
+# tokens = ["IDENT:FOO", "LPAREN", "RPAREN", "EOF"]
+# tokens = ["IDENT:FOO", "LPAREN", "RPAREN", "COLON", "NUMBER:0", "EOF"]
+# tokens = ["IDENT:X", "COMMA", "IDENT:7g", "COMMA", "IDENT:7", "COMMA", "EOF"]
+# tokens = ["IDENT:yolo", "EOF"]
 
 #begin utilities
 def is_ident(tok):
@@ -33,9 +34,126 @@ def is_number(tok):
     return -1 < tok.find("NUMBER")
 #end utilities
 
-#<NameList> -> <Name> COMMA <NameList> | <Name>
 
-#<ParameterList> -> <Parameter> COMMA <ParameterList> | <Parameter>
+# <FunctionDeclaration> -> FUNCTION <Name> LPAREN <FunctionParams> LBRACE <FunctionBody> RBRACE
+#
+# <FunctionParams> -> <NameList> RPAREN | RPAREN
+#
+# <FunctionBody> -> <Program> <Return> | <Return>
+#
+# <Return> -> RETURN <ParameterList>
+
+
+def Assignment(token_index):
+    '''<Assignment> ->
+        <SingleAssignment>
+        | <MultipleAssignment>
+    '''
+    # <SingleAssignment>
+    (success, returned_index, returned_subtree) = SingleAssignment(token_index)
+    if success:
+        return [True, returned_index, ["Assignment0", returned_subtree]]
+    # <MultipleAssignment>
+    (success, returned_index, returned_subtree) = MultipleAssignment(token_index)
+    if success:
+        return [True, returned_index, ["Assignment1", returned_subtree]]
+    return [False, token_index, []]
+
+
+def SingleAssignment(token_index):
+    '''<SingleAssignment> ->
+        VAR <Name> ASSIGN <Expression>
+    '''
+    # VAR <Name> ASSIGN <Expression>
+    if "VAR" == tokens[token_index]:
+        (success, returned_index, returned_subtree) = Name(token_index + 1)
+        if success:
+            subtree = ["SingleAssignment0", returned_subtree]
+            if "ASSIGN" == tokens[returned_index]:
+                subtree.append(tokens[returned_index])
+                print returned_index + 1
+                (success, returned_index, returned_subtree) = Expression(returned_index + 1)
+                if success:
+                    subtree.append(returned_subtree)
+                    return [True, returned_index, subtree]
+    return [False, token_index, []]
+
+
+def MultipleAssignment(token_index):
+    '''<MultipleAssignment> ->
+        VAR <NameList> ASSIGN <FunctionCall>
+    '''
+    # VAR <NameList> ASSIGN <FunctionCall>
+    if "VAR" == tokens[token_index]:
+        (success, returned_index, returned_subtree) = NameList(token_index + 1)
+        if success:
+            subtree = ["MultipleAssignment0", returned_subtree]
+            if "ASSIGN" == tokens[returned_index]:
+                subtree.append(tokens[returned_index])
+                print returned_index + 1
+                (success, returned_index, returned_subtree) = Expression(returned_index + 1)
+                if success:
+                    subtree.append(returned_subtree)
+                    return [True, returned_index, subtree]
+    return [False, token_index, []]
+
+
+def Print(token_index):
+    '''<Print> ->
+        PRINT <Expression>
+    '''
+    # PRINT <Expression>
+    if "PRINT" == tokens[token_index]:
+        (success, returned_index, returned_subtree) = Expression(token_index + 1)
+        if success:
+            return [True, returned_index, ["Print0", returned_subtree]]
+    return [False, token_index, []]
+
+
+def NameList(token_index):
+    '''<NameList> ->
+        <Name> COMMA <NameList>
+        | <Name>
+    '''
+    # <Name> COMMA <NameList>
+    (success, returned_index, returned_subtree) = Name(token_index)
+    if success:
+        subtree = ["NameList0", returned_subtree]
+        if "COMMA" == tokens[returned_index]:
+            subtree.append(tokens[returned_index])
+            (success, returned_index, returned_subtree) = NameList(
+                returned_index + 1)
+            if success:
+                subtree.append(returned_subtree)
+                return [True, returned_index, subtree]
+    # <Name>
+    (success, returned_index, returned_subtree) = Name(token_index)
+    if success:
+        return [True, returned_index, ["NameList1", returned_subtree]]
+    return [False, token_index, []]
+
+def ParameterList(token_index):
+    '''<ParameterList> ->
+        <Parameter> COMMA <ParameterList>
+        | <Parameter>
+    '''
+    # <Parameter> COMMA <ParameterList>
+    (success, returned_index, returned_subtree) = Parameter(token_index)
+    if success:
+        subtree = ["ParameterList0", returned_subtree]
+        if "COMMA" == tokens[returned_index]:
+            subtree.append(tokens[returned_index])
+            (success, returned_index, returned_subtree) = ParameterList(
+                returned_index + 1)
+            if success:
+                subtree.append(returned_subtree)
+                return [True, returned_index, subtree]
+    # <Parameter>
+    (success, returned_index, returned_subtree) = Parameter(token_index)
+    if success:
+        return [True, returned_index, ["ParameterList1", returned_subtree]]
+    return [False, token_index, []]
+
 
 def Parameter(token_index):
     '''<Parameter> ->
@@ -52,16 +170,6 @@ def Parameter(token_index):
         return [True, returned_index, ["Parameter1", returned_subtree]]
     return [False, token_index, []]
 
-def Print(token_index):
-    '''<Print> ->
-        PRINT <Expression>
-    '''
-    # PRINT <Expression>
-    if "PRINT" == tokens[token_index]:
-        (success, returned_index, returned_subtree) = Expression(token_index + 1)
-        if success:
-            return [True, returned_index, ["Print0", returned_subtree]]
-    return [False, token_index, []]
 
 def Expression(token_index):
     '''<Expression> ->
@@ -306,4 +414,4 @@ def Number(token_index):
 
 if __name__ == '__main__':
     print("starting __main__")
-    pp.pprint(Parameter(0))
+    pp.pprint(Assignment(0))
