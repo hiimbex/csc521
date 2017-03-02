@@ -1,15 +1,15 @@
 import re
-user_input = "function SquareDistance(x1, y1, x2, y2) { return x1^x2 + y1 ^ y2 } var distance = SquareDistance(2, 3, 5, 6) result = oldsum - value / 100"
+user_input = "function SquareDistance(x1, y1, x2, y2) { return x1^x2 + y1 ^ y2 } var distance = SquareDistance(2, 3, 5, 6) result = oldsum - value / 100 print result"
 output = ""
-
+# fuck
 base = ["=", "+", "-", "*", "/", "^", "(", ")", "{", "}", ",", ":"]
 
 known = {"var": "VAR", "print": "PRINT", "=": "ASSIGN", "return": "RETURN",
-        "function": "FUNCTION", "+": "ADD", "-": "SUB", "*": "MULT", "/": "DIV",
-        "^": "EXP", "(": "LPAREN", ")": "RPAREN", "{": "LBRACE", "}": "RBRACE",
-        ",": "COMMA", ":": "COLON"}
+         "function": "FUNCTION", "+": "ADD", "-": "SUB", "*": "MULT", "/":
+         "DIV", "^": "EXP", "(": "LPAREN", ")": "RPAREN", "{": "LBRACE", "}":
+         "RBRACE", ",": "COMMA", ":": "COLON"}
 
-knownToIgnore = ["VAR", "PRINT","ASSIGN", "RETURN", "FUNCTION", "ADD", "SUB",
+knownToIgnore = ["VAR", "PRINT", "ASSIGN", "RETURN", "FUNCTION", "ADD", "SUB",
                  "MULT", "DIV", "EXP", "LPAREN", "RPAREN", "LBRACE", "RBRACE",
                  "COMMA", "COLON"]
 
