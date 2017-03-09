@@ -13,16 +13,18 @@ pp = pprint.PrettyPrinter(indent=1, depth=100)
 # tokens = ["NUMBER:9", "ADD", "LPAREN", "IDENT:X",
 #           "SUB", "NUMBER:4", "RPAREN", "EOF"]
 # tokens = ["PRINT", "LPAREN", "IDENT:X", "SUB", "NUMBER:4", "RPAREN", "EOF"]
-# tokens = ["IDENT:FOO", "LPAREN", "RPAREN", "EOF"]
+#tokens = ["VAR", "IDENT:JK", "ASSIGN","IDENT:FOO", "LPAREN", "RPAREN", "EOF", "EOF"]
 # tokens = ["IDENT:FOO", "LPAREN", "RPAREN", "COLON", "NUMBER:0", "EOF"]
 # tokens = ["IDENT:X", "COMMA", "IDENT:7g", "COMMA", "IDENT:7", "COMMA", "EOF"]
 #<Name> LPAREN <FunctionCallParams>
 #tokens = ["IDENT:yolo", "COMMA", "IDENT:jskdb","RPAREN", "EOF"]
-# tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HI", "RPAREN", "LBRACE","VAR", "h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "VAR", "IDENT:X",
-#           "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:Xg", "LPAREN", "IDENT:Xfsa",
-#           "COMMA", "IDENT:hell", "RPAREN"]
+#tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HJF","RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE"]
 
-tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:V", "COMMA", "IDENT:GH", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
+#tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:V", "COMMA", "IDENT:GH", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
+
+tokens = ["FUNCTION", "IDENT:x", "LPAREN", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
+
+
 
 
 # begin utilities
@@ -413,7 +415,6 @@ def FunctionCall(token_index):
     # <Name> LPAREN <FunctionCallParams> COLON <Number>
     (success, returned_index, returned_subtree) = Name(token_index)
     if success:
-
         subtree = ["FunctionCall0", returned_subtree]
         if "LPAREN" == tokens[returned_index]:
             subtree.append(tokens[returned_index])
