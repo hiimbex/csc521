@@ -18,12 +18,14 @@ pp = pprint.PrettyPrinter(indent=1, depth=100)
 # tokens = ["IDENT:X", "COMMA", "IDENT:7g", "COMMA", "IDENT:7", "COMMA", "EOF"]
 #<Name> LPAREN <FunctionCallParams>
 #tokens = ["IDENT:yolo", "COMMA", "IDENT:jskdb","RPAREN", "EOF"]
-tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HI", "RPAREN", "LBRACE",
-          "RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "VAR", "IDENT:X",
-          "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:Xg", "LPAREN", "IDENT:Xfsa",
-          "COMMA", "IDENT:hell", "RPAREN"]
+# tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HI", "RPAREN", "LBRACE","VAR", "h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "VAR", "IDENT:X",
+#           "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:Xg", "LPAREN", "IDENT:Xfsa",
+#           "COMMA", "IDENT:hell", "RPAREN"]
 
-#begin utilities
+tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:V", "COMMA", "IDENT:GH", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
+
+
+# begin utilities
 def is_ident(tok):
     '''Determines if the token is of type IDENT.
     tok - a token
@@ -31,13 +33,14 @@ def is_ident(tok):
     '''
     return -1 < tok.find("IDENT")
 
+
 def is_number(tok):
     '''Determines if the token is of type NUMBER.
     tok - a token
     returns True if NUMBER is in the token or False if not.
     '''
     return -1 < tok.find("NUMBER")
-#end utilities
+# end utilities
 
 
 def Program(token_index):
@@ -98,9 +101,9 @@ def FunctionDeclaration(token_index):
                 (success, returned_index, returned_subtree) = FunctionParams(returned_index + 1)
                 if success:
                     subtree.append(returned_subtree)
-                    if "LBRACE" == tokens[returned_index + 2]:
-                        subtree.append(tokens[returned_index + 2])
-                        (success, returned_index, returned_subtree) = FunctionBody(returned_index + 3)
+                    if "LBRACE" == tokens[returned_index]:
+                        subtree.append(tokens[returned_index])
+                        (success, returned_index, returned_subtree) = FunctionBody(returned_index + 1)
                         if success:
                             subtree.append(returned_subtree)
                             if "RBRACE" == tokens[returned_index]:
@@ -121,7 +124,7 @@ def FunctionParams(token_index):
         subtree = ["FunctionParams0", returned_subtree]
         if "RPAREN" == tokens[returned_index]:
             subtree.append(tokens[returned_index])
-            return [True, token_index, subtree]
+            return [True, returned_index + 1, subtree]
     # RPAREN
     if "RPAREN" == tokens[token_index]:
         subtree = ["FunctionParams1", tokens[token_index]]
@@ -136,9 +139,14 @@ def FunctionBody(token_index):
         | <Return>
     '''
     # <Program> <Return>
-    #to be completed when program is made
-    # <Return
-    print token_index
+    (success, returned_index, returned_subtree) = Program(token_index)
+    if success:
+        subtree = ["FunctionBody0", returned_subtree]
+        (success, returned_index, returned_subtree) = Return(returned_index)
+        if success:
+            subtree.append(returned_subtree)
+            return [True, returned_index, subtree]
+    # <Return>
     (success, returned_index, returned_subtree) = Return(token_index)
     if success:
         return [True, returned_index, ["FunctionBody1", returned_subtree]]
@@ -242,6 +250,7 @@ def NameList(token_index):
     if success:
         return [True, returned_index, ["NameList1", returned_subtree]]
     return [False, token_index, []]
+
 
 def ParameterList(token_index):
     '''<ParameterList> ->
@@ -474,7 +483,6 @@ def Value(token_index):
         <Name>
         | <Number>
     '''
-    # try in order!
     #<name>
     (success, returned_index, returned_subtree) = Name(token_index)
     if success:
