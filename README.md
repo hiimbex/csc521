@@ -1,7 +1,7 @@
 # csc521
 My projects for Design and Organization of Programming Languages, including lexer, parser, and interpreter 
 
-My implementations of the lexer, parser and interpretter can be found in this file level. 
+My implementations of the lexer, parser and interpretter can be found in the file python-quirk. 
 
 Each is best ran individually given the requirements for the project indicate the lexer's output should contain each lexeme seperated by a new line in between, while as the parser takes a list as its input. Each takes input based on a variable at the top of the file which can easily be changed. The varibles are respectively `user_input`, `tokens`, and `tree`.
 
