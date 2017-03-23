@@ -231,7 +231,11 @@ def MultipleAssignment0(pt, scope):
     #2. Get the values returned from the fuction call
     #Bonus: error if any name already exists in scope -- no rebinding
     #Bonus: error if the number of variable names does not match the number of values
-    return -1
+    names = func_by_name(pt[2][0], pt[2], scope)
+    values = func_by_name(pt[4][0], pt[4], scope)[1]
+
+    for i in range(len(values)):
+        scope[names[i]] = values[i]
 
 # <Print> -> PRINT <Expression>
 def Print0(pt, scope):
@@ -250,7 +254,7 @@ def NameList1(pt, scope):
 #should return a a list of values.
 def ParameterList0(pt, scope):
     param = func_by_name(pt[1][0], pt[1], scope)
-    return [param] + func_by_name(pt[3][0], pt[3], scope)
+    return [param] + [func_by_name(pt[3][0], pt[3], scope)]
 
 def ParameterList1(pt, scope):
     return func_by_name(pt[1][0], pt[1], scope)
@@ -343,8 +347,8 @@ def FunctionCall0(pt, scope):
 
     for i in range(len(params)):
         temp_scope[str(param_names[i])] = params[i]
-    eprint(scope)
-    return func_by_name(store[1][0], store[1], temp_scope)
+
+    return func_by_name(store[1][0], store[1], temp_scope)[num][0]
 
 def FunctionCall1(pt, scope):
     '''
@@ -500,9 +504,154 @@ e3tree = ['Program0',
         'LPAREN',
         ['FunctionCallParams1', 'RPAREN']]]]]]]]]
 
+e4tree = ['Program0',
+ ['Statement0',
+  ['FunctionDeclaration0',
+   'FUNCTION',
+   ['Name0', 'IDENT:baz_func'],
+   'LPAREN',
+   ['FunctionParams0',
+    ['NameList0',
+     ['Name0', 'IDENT:a'],
+     'COMMA',
+     ['NameList1', ['Name0', 'IDENT:b']]],
+    'RPAREN'],
+   'LBRACE',
+   ['FunctionBody0',
+    ['Program0',
+     ['Statement1',
+      ['Assignment0',
+       ['SingleAssignment0',
+        'VAR',
+        ['Name0', 'IDENT:y'],
+        'ASSIGN',
+        ['Expression1',
+         ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:a']]]],
+         'SUB',
+         ['Expression2',
+          ['Term2',
+           ['Factor4', ['Value0', ['Name2', 'ADD', 'IDENT:b']]]]]]]]],
+     ['Program1',
+      ['Statement1',
+       ['Assignment0',
+        ['SingleAssignment0',
+         'VAR',
+         ['Name0', 'IDENT:z'],
+         'ASSIGN',
+         ['Expression1',
+          ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:a']]]],
+          'SUB',
+          ['Expression2',
+           ['Term2',
+            ['Factor4', ['Value0', ['Name1', 'SUB', 'IDENT:b']]]]]]]]]]],
+    ['Return0',
+     'RETURN',
+     ['ParameterList0',
+      ['Parameter0',
+       ['Expression2',
+        ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:y']]]]]],
+      'COMMA',
+      ['ParameterList1',
+       ['Parameter0',
+        ['Expression2',
+         ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:z']]]]]]]]]],
+   'RBRACE']],
+ ['Program0',
+  ['Statement1',
+   ['Assignment1',
+    ['MultipleAssignment0',
+     'VAR',
+     ['NameList0',
+      ['Name0', 'IDENT:v'],
+      'COMMA',
+      ['NameList1', ['Name0', 'IDENT:w']]],
+     'ASSIGN',
+     ['FunctionCall1',
+      ['Name0', 'IDENT:baz_func'],
+      'LPAREN',
+      ['FunctionCallParams0',
+       ['ParameterList0',
+        ['Parameter0',
+         ['Expression2',
+          ['Term2',
+           ['Factor4', ['Value1', ['Number1', 'SUB', 'NUMBER:5']]]]]],
+        'COMMA',
+        ['ParameterList1',
+         ['Parameter0',
+          ['Expression2',
+           ['Term2',
+            ['Factor4', ['Value1', ['Number2', 'ADD', 'NUMBER:2']]]]]]]],
+       'RPAREN']]]]],
+  ['Program0',
+   ['Statement2',
+    ['Print0',
+     'PRINT',
+     ['Expression2',
+      ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:v']]]]]]],
+   ['Program1',
+    ['Statement2',
+     ['Print0',
+      'PRINT',
+      ['Expression2',
+       ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:w']]]]]]]]]]]
+
+e5tree = ['Program0',
+ ['Statement0',
+  ['FunctionDeclaration0',
+   'FUNCTION',
+   ['Name0', 'IDENT:cloud_func'],
+   'LPAREN',
+   ['FunctionParams0', ['NameList1', ['Name0', 'IDENT:a']], 'RPAREN'],
+   'LBRACE',
+   ['FunctionBody1',
+    ['Return0',
+     'RETURN',
+     ['ParameterList0',
+      ['Parameter0',
+       ['Expression2',
+        ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:a']]]]]],
+      'COMMA',
+      ['ParameterList0',
+       ['Parameter0',
+        ['Expression2',
+         ['Term2',
+          ['Factor3',
+           ['Value0', ['Name0', 'IDENT:a']],
+           'EXP',
+           ['Factor4', ['Value1', ['Number0', 'NUMBER:2']]]]]]],
+       'COMMA',
+       ['ParameterList1',
+        ['Parameter0',
+         ['Expression2',
+          ['Term2',
+           ['Factor3',
+            ['Value0', ['Name0', 'IDENT:a']],
+            'EXP',
+            ['Factor4', ['Value1', ['Number0', 'NUMBER:3']]]]]]]]]]]],
+   'RBRACE']],
+ ['Program1',
+  ['Statement2',
+   ['Print0',
+    'PRINT',
+    ['Expression2',
+     ['Term2',
+      ['Factor2',
+       ['FunctionCall0',
+        ['Name0', 'IDENT:cloud_func'],
+        'LPAREN',
+        ['FunctionCallParams0',
+         ['ParameterList1',
+          ['Parameter0',
+           ['Expression2',
+            ['Term2',
+             ['Factor4', ['Value1', ['Number0', 'NUMBER:2']]]]]]],
+         'RPAREN'],
+        'COLON',
+        ['Number0', 'NUMBER:1']]]]]]]]]
+
 if __name__ == '__main__':
     #choose a parse tree and initial scope
-    tree = e3tree
+    tree = e5tree
     scope = {}
     #execute the program starting at the top of the tree
     func_by_name(tree[0], tree, scope)
