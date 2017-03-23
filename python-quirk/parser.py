@@ -1,23 +1,7 @@
 import sys
-import pprint
+import pprint, pickle
 
 pp = pprint.PrettyPrinter(indent=1, depth=100)
-
-#tokens = ["VAR", "IDENT:X", "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:X", "ADD", "NUMBER:4", "EOF"]
-# tokens = ["SUB", "IDENT:X", "ADD", "NUMBER:4"]
-# tokens = ["SUB", "IDENT:X", "EXP", "NUMBER:4", "EOF"]
-# tokens = ["SUB", "IDENT:X", "EXP", "NUMBER:4", "EXP", "IDENT:X", "EOF"]
-# tokens = ["NUMBER:9", "DIV", "IDENT:X", "EXP",
-#           "NUMBER:4", "EXP", "IDENT:X", "EOF"]
-tokens = ["VAR", "IDENT:X", "COMMA", "IDENT:F", "ASSIGN", "IDENT:t9", "LPAREN", "IDENT:g", "RPAREN", "EOF"]
-#tokens = ['PRINT',  "NUMBER:7", "EOF"]
-
-#tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HJF","RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "EOF"]
-
-#tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:V", "COMMA", "IDENT:GH", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
-
-#tokens = ["FUNCTION", "IDENT:x", "LPAREN", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
-
 
 # begin utilities
 def is_ident(tok):
@@ -48,10 +32,10 @@ def Program(token_index):
     if success:
         subtree = ["Program0", returned_subtree]
         (success, returned_index,
-         returned_subtree) = Program(returned_index + 1)
+         returned_subtree) = Program(returned_index)
         if success:
             subtree.append(returned_subtree)
-            return [True, token_index, subtree]
+            return [True, returned_index, subtree]
     # <Statement>
     (success, returned_index, returned_subtree) = Statement(token_index)
     if success:
@@ -112,7 +96,7 @@ def FunctionDeclaration(token_index):
                             subtree.append(returned_subtree)
                             if "RBRACE" == tokens[returned_index]:
                                 subtree.append(tokens[returned_index])
-                    return [True, returned_index, subtree]
+                    return [True, (returned_index + 1), subtree]
     return [False, token_index, []]
 
 
@@ -221,7 +205,7 @@ def MultipleAssignment(token_index):
                  returned_subtree) = FunctionCall(returned_index + 1)
                 if success:
                     subtree.append(returned_subtree)
-                    return [True, returned_index, subtree]
+                    return [True, (returned_index + 1), subtree]
     return [False, token_index, []]
 
 
@@ -231,10 +215,12 @@ def Print(token_index):
     '''
     # PRINT <Expression>
     if "PRINT" == tokens[token_index]:
+        subtree = ["Print0", tokens[token_index]]
         (success, returned_index,
          returned_subtree) = Expression(token_index + 1)
         if success:
-            return [True, returned_index, ["Print0", returned_subtree]]
+            subtree.append(returned_subtree)
+            return [True, returned_index, subtree]
     return [False, token_index, []]
 
 
@@ -433,6 +419,7 @@ def FunctionCall(token_index):
              returned_subtree) = FunctionCallParams(returned_index + 1)
             if success:
                 subtree.append(returned_subtree)
+                print tokens[returned_index]
                 if "COLON" == tokens[returned_index]:
                     subtree.append(tokens[returned_index])
                     (success, returned_index, returned_subtree) = Number(
@@ -467,7 +454,7 @@ def FunctionCallParams(token_index):
         subtree = ["FunctionCallParams0", returned_subtree]
         if "RPAREN" == tokens[returned_index]:
             subtree.append(tokens[returned_index])
-            return [True, token_index, subtree]
+            return [True, (returned_index + 1), subtree]
     # RPAREN
     if "RPAREN" == tokens[token_index]:
         subtree = ["FunctionCallParams1", tokens[token_index]]
@@ -551,4 +538,7 @@ def Number(token_index):
 
 if __name__ == '__main__':
     print("starting __main__")
+    sys.argv.remove('parser.py')
+    tokens = sys.argv
+    tokens.append("EOF")
     pp.pprint(Program(0))
