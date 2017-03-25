@@ -1,26 +1,5 @@
 import re, sys, os, pickle
 
-'''
-    #tokens = ["VAR", "IDENT:X", "COMMA", "IDENT:jay-z", "ASSIGN", "IDENT:X", "ADD", "NUMBER:4", "EOF"]
-
-    #tokens = ["NUMBER:9", "DIV", "IDENT:X", "EXP","NUMBER:4", "EXP", "IDENT:X", "EOF"]
-
-    #tokens = ["VAR", "IDENT:X", "COMMA", "IDENT:F", "ASSIGN", "IDENT:t9", "LPAREN", "IDENT:g", "RPAREN", "EOF"]
-
-    #tokens = ["VAR","IDENT:y","ASSIGN","NUMBER:7","PRINT","IDENT:v","SUB","NUMBER:4", "EOF"]
-
-    #tokens = ['PRINT',  "NUMBER:7", "EOF"]
-
-    #tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:HJF","RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "COMMA", "IDENT:ADJ", "RBRACE", "EOF"]
-
-    #tokens = ["FUNCTION", "IDENT:x", "LPAREN", "IDENT:V", "COMMA", "IDENT:GH", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
-
-    #tokens = ["FUNCTION", "IDENT:x", "LPAREN", "RPAREN", "LBRACE","VAR", "IDENT:h", "ASSIGN", "NUMBER:9","RETURN", "IDENT:J", "RBRACE", "EOF"]
-
-    Some test cases for me from the parser
-
-'''
-
 user_input = "function SquareDistance(x1, y1, x2, y2){return x1^x2 + y1 ^ y2, 86 }  var distance = SquareDistance(2, 3, 5, 6):1 print oldsum/hello+8"
 
 user_input = "print 1 + 4 - 3"

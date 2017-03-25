@@ -1,77 +1,7 @@
 from __future__ import print_function
-import sys
-import pprint
-import thread, threading
-
+import sys, pprint, thread, threading, json
 
 pp = pprint.PrettyPrinter(indent=1, depth=100)
-
-tree = ['Value0', ['Name1', 'SUB', 'IDENT:x']]
-tree = ['FunctionDeclaration0',
-    'FUNCTIION',
-    ['Name0', 'IDENT:FooFunk'],
-    'LPAREN',
-    ['FunctionParams0',
-        ['NameList0',
-            ['Name0',"IDENT:a"],
-            'COMMA',
-            ['NameList1', ['Name0', "IDENT:b"]]],
-        'RPAREN'],
-    'LBRACE',
-    ['FunctionBody1',
-        ['Return0',
-            ['NameList0',
-                ['Name0',"IDENT:y"],
-                'COMMA',
-                ['NameList1', ['Name0', "IDENT:z"]]]
-
-        ]],
-    'RBRACE']
-
-'''Scope example:
-var x = 4 #{'x':4}
-function foo(z) {
-    foo(z/2)
-    return z + x
-}
-foo(14)
-Inside of foo(14), the scope looks like this:
-{
- 'z':7,
- "__parent__": {
-    'z':14,
-    "__parent__": {
-        'x':4
-    }
- }
-}
-'''
-
-'''For testing function calls. The source:
-FooFunk(x - 4, z)
-'''
-tree_with_function_call = ["FunctionCall0",
-    ['Name0', "IDENT:FooFunk"],
-    'LPAREN',
-    ['FunctionCallParams0',
-        ["ParameterList0",
-            ["Parameter0",
-                ['Expression1',
-                   ['Term2', ['Factor4', ['Value0', ['Name0', 'IDENT:x']]]],
-                   'SUB',
-                   ['Expression2',
-                        ['Term2', ['Factor4', ['Value1', ['Number0', 'NUMBER:4']]]]
-                   ]
-                ]
-            ],
-            'COMMA',
-            ['ParameterList1',
-                ['Parameter1', ['Name0', "IDENT:z"]]
-            ]
-        ],
-        'RPAREN'
-    ]
-]
 
 scope_with_function = {
         'x':100,
@@ -97,8 +27,6 @@ def lookup_in_scope_stack(name, scope):
         functions.
     returns - the value associated with the name in scope.
     '''
-    #turn this on for better debugging
-    #eprint("lookup_in_scope_stack() "+ str(name))
 
     if name in scope:
         return scope[name]
@@ -143,12 +71,6 @@ def func_by_name(*args):
 
 # <Program> -> <Statement> <Program> | <Statement>
 def Program0(pt, scope):
-    # t = threading.Thread(target=func_by_name, args=(pt[1][0], pt[1], scope))
-    # t.start()
-    # while t.isAlive():
-    #     pass
-    # t = threading.Thread(target=func_by_name, args=(pt[2][0], pt[2], scope))
-    # t.start()
     func_by_name(pt[1][0], pt[1], scope)
     func_by_name(pt[2][0], pt[2], scope)
 
@@ -182,8 +104,6 @@ def FunctionDeclaration0(pt, scope):
     function_name = func_by_name(pt[2][0], pt[2], scope)[1]
     param_names = func_by_name(pt[4][0], pt[4], scope)
     scope[function_name] = [param_names, pt[6]]
-    #if pt[8]:
-    #func_by_name(pt[8][0], pt[8], scope)
 
 # <FunctionParams> -> <NameList> RPAREN | RPAREN
 # should return a list of values
@@ -651,9 +571,21 @@ e5tree = ['Program0',
 
 if __name__ == '__main__':
     #choose a parse tree and initial scope
+    # aParseTree = ["Program1",["Statement2"]]
+    # serializedParseTree = json.dumps(aParseTree)
+    # print(serializedParseTree)
+    # aCopyOfTheParseTree = json.loads(serializedParseTree)
+    # print(type(aCopyOfTheParseTree))
+    # tree = aCopyOfTheParseTree
+    # sys.argv.remove('interpreter.py')
+    # tree = sys.argv
+    # eprint(type(tree))
+    # tree = tree[2:]
+    # eprint(str(tree[0]))
+    # tree = json.loads(str(tree))
+    # eprint(tree)
+
     tree = e5tree
     scope = {}
     #execute the program starting at the top of the tree
     func_by_name(tree[0], tree, scope)
-    #Uncomment to see the final scope after the program has executed.
-    #pp.pprint(scope)

@@ -1,5 +1,4 @@
-import sys
-import pprint, pickle
+import sys, pprint, pickle, os, json
 
 pp = pprint.PrettyPrinter(indent=1, depth=100)
 
@@ -540,5 +539,9 @@ if __name__ == '__main__':
     print("starting __main__")
     sys.argv.remove('parser.py')
     tokens = sys.argv
+    print tokens
     tokens.append("EOF")
-    pp.pprint(Program(0))
+    parseTree = Program(0)
+    pp.pprint(parseTree)
+    # serializedTree = json.dumps(parseTree)
+    # os.system("python interpreter.py {0}".format(serializedTree))
