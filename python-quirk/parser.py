@@ -1,4 +1,4 @@
-import sys, pprint, pickle, os, json
+import sys, pprint, pickle, os, json, fileinput
 
 pp = pprint.PrettyPrinter(indent=1, depth=100)
 
@@ -204,7 +204,7 @@ def MultipleAssignment(token_index):
                  returned_subtree) = FunctionCall(returned_index + 1)
                 if success:
                     subtree.append(returned_subtree)
-                    return [True, (returned_index + 1), subtree]
+                    return [True, returned_index, subtree]
     return [False, token_index, []]
 
 
@@ -418,7 +418,6 @@ def FunctionCall(token_index):
              returned_subtree) = FunctionCallParams(returned_index + 1)
             if success:
                 subtree.append(returned_subtree)
-                print tokens[returned_index]
                 if "COLON" == tokens[returned_index]:
                     subtree.append(tokens[returned_index])
                     (success, returned_index, returned_subtree) = Number(
@@ -537,11 +536,11 @@ def Number(token_index):
 
 if __name__ == '__main__':
     print("starting __main__")
-    sys.argv.remove('parser.py')
-    tokens = sys.argv
+    tokens = ""
+    for line in fileinput.input():
+        tokens += line
+    tokens = tokens.split()
     print tokens
-    tokens.append("EOF")
+
     parseTree = Program(0)
     pp.pprint(parseTree)
-    # serializedTree = json.dumps(parseTree)
-    # os.system("python interpreter.py {0}".format(serializedTree))

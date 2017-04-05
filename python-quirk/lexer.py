@@ -1,15 +1,8 @@
-import re, sys, os, pickle
+import re, sys, pickle, fileinput
 
-user_input = "function SquareDistance(x1, y1, x2, y2){return x1^x2 + y1 ^ y2, 86 }  var distance = SquareDistance(2, 3, 5, 6):1 print oldsum/hello+8"
-
-user_input = "print 1 + 4 - 3"
-user_input = "var x = (5 * 2) / 5 print x"
-user_input = "function foo_func(){ return 2 ^ 8 } print foo_func()"
-user_input = "function baz_func(a,b){ var y = a - + b var z = a - - b return y,z } var v,w = baz_func(-5, +2) print v print w"
-user_input = "function cloud_func(a){ return a, a^2, a^3 } print cloud_func(2):1"
-user_input = "print (5*9)"
-
-#user_input = "var y = 7 print 8-y"
+user_input = ""
+for line in fileinput.input():
+    user_input += line
 
 base = ["=", "+", "-", "*", "/", "^", "(", ")", "{", "}", ",", ":"]
 
@@ -78,5 +71,3 @@ for term in output:
         finaloutput += " "
 
 print finaloutput
-
-os.system("python parser.py {0}".format(finaloutput))
