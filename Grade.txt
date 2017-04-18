@@ -1,0 +1,32 @@
+Lexer: 29/30
+
+  While format does not follow the specs given in homework guideline, the contents were lexed properly.
+
+  Example 1 CORRECTLY LEXED
+  Example 2 CORRECTLY LEXED
+  Example 3 CORRECTLY LEXED
+  Example 4 CORRECTLY LEXED
+  Example 5 CORRECTLY LEXED
+
+Parser: 30/30
+
+  Example 1 CORRECTLY PARSED
+  Example 2 CORRECTLY PARSED
+  Example 3 CORRECTLY PARSED
+  Example 4 CORRECTLY PARSED
+  Example 5 CORRECTLY PARSED
+
+Interpreter: 20/20
+
+  Example 1 CORRECTLY INTERPRETED
+  Example 2 CORRECTLY INTERPRETED
+  Example 3 CORRECTLY INTERPRETED
+  Example 4 CORRECTLY INTERPRETED
+  Example 5 CORRECTLY INTERPRETED
+
+Style: 19/20
+
+  Concise readme.
+
+  One point lost because of the parser containing various instances of one
+  warning from pep8. E302
