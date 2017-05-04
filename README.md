@@ -1,7 +1,20 @@
 # CSC521 Design and Organization of Programming Languages
+
+# Clojure Version
+
+My implementation of the interpreter using instaparse can be found in the folder clojure-quirk.
+
+Simply run it  via `lein run < example1.q` to run the interpretter or `lein run -pt < example1.q` to view the parse tree.
+
+The main implementation consisted of the interpretted and is based in a similar tree sturcture to the python project. It uses `CallByLabel` to run each part of the parse tree. The file is organized with `Program` and `Statement` at the bottom and `Name` and `Number` at the top.
+
+Currently my interpretter is incomplete for running some of the more complex functional examples.
+
+# Python Version
+
 My projects for CSC-521, including lexer, parser, and interpreter
 
-My implementations of the lexer, parser and interpreter can be found in the file python-quirk.
+My implementations of the lexer, parser and interpreter can be found in the folder python-quirk.
 
 Simply run all 3 files separately via `python lexer.py < example1.q` with the lexer.py being replaced by parser.py and interpreter.py as well as the file name to test different examples.
 
