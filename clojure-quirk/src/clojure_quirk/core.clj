@@ -18,6 +18,16 @@
   (apply (resolve (symbol (name funLabel))) args)
 ); end CallByLabel
 
+(defn NumberA [subtree scope]
+  (ret-print "NumberA")
+  (cond (= 2 (count subtree))
+    (Double/parseDouble (second (second subtree)))
+    (= :SUB (first (second subtree)))
+    (- (Double/parseDouble (second (third subtree))))
+    (= :ADD (first (second subtree)))
+    (Double/parseDouble (second (third subtree))))
+); end Number
+
 (defn Name [subtree scope]
   (ret-print "Name")
   (ret-print (second (second subtree)))
@@ -27,33 +37,21 @@
     (get scope (second (second subtree))))
 ); end Name
 
-(defn NumberA [subtree scope]
-  (ret-print "NumberA")
-  (cond
-      (= 2 (count subtree))
-      (Double/parseDouble (second (second subtree)))
-      (= 2 :SUB (first (second subtree)))
-      (- (Double/parseDouble (second (third subtree))))
-      (= 2 :ADD (first (second subtree)))
-      (Double/parseDouble (second (third subtree))))
-); end Number
-
 (defn Value [subtree scope]
   (ret-print "Value")
   (CallByLabel (first (second subtree)) (second subtree) scope)
 ); end Value
 
-(defn Term [subtree scope]
-  (ret-print "Term")
-  (cond (= 2 (count subtree))
-    (CallByLabel (first (second subtree))(second subtree) scope)
-     (= :MULT (first (third subtree)))
-        (*(CallByLabel (first (second subtree))(second subtree) scope)
-        (CallByLabel (first (fourth subtree))(fourth subtree) scope))
-      (= :DIV (first (third subtree)))
-        (quot (CallByLabel (first (second subtree))(second subtree) scope)
-        (CallByLabel (first (fourth subtree))(fourth subtree) scope)))
-); end Term
+(defn SubExpression [subtree scope]
+  (println "SubExpression")
+  (CallByLabel (first (third subtree))(third subtree) scope)
+); end SubExpression
+
+(defn FunctionCall [subtree scope]
+  (ret-print "FunctionCall")
+  (= :RPAREN (first (second (fourth subtree))))
+    (get scope (second (second (second subtree))))
+); end FunctionCall
 
 (defn Factor [subtree scope]
   (ret-print "Factor")
@@ -64,26 +62,17 @@
       (CallByLabel (first (fourth subtree))(fourth subtree) scope)))
 ); end Factor
 
-(defn FunctionCall [subtree scope]
-  (ret-print "FunctionCall")
-  (= :RPAREN (first (second (fourth subtree))))
-    (get scope (second (second (second subtree))))
-); end FunctionCall
-
-(defn Parameter [subtree scope]
-  (ret-print "Parameter")
-  (CallByLabel (first (second subtree))(second subtree) scope)
-); end Parameter
-
-(defn ParameterList [subtree scope]
-  (ret-print "ParameterList")
-  (CallByLabel (first (second subtree))(second subtree) scope)
-); end ParameterList
-
-(defn SubExpression [subtree scope]
-  (println "SubExpression")
-  (CallByLabel (first (third subtree))(third subtree) scope)
-); end SubExpression
+(defn Term [subtree scope]
+  (ret-print "Term")
+  (cond (= 2 (count subtree))
+    (CallByLabel (first (second subtree))(second subtree) scope)
+      (= :MULT (first (third subtree)))
+        (*(CallByLabel (first (second subtree))(second subtree) scope)
+        (CallByLabel (first (fourth subtree))(fourth subtree) scope))
+      (= :DIV (first (third subtree)))
+        (quot (CallByLabel (first (second subtree))(second subtree) scope)
+        (CallByLabel (first (fourth subtree))(fourth subtree) scope)))
+); end Term
 
 (defn Expression [subtree scope]
   (ret-print "Expression")
@@ -96,6 +85,21 @@
       (- (CallByLabel (first (second subtree))(second subtree) scope)
       (CallByLabel (first (fourth subtree))(fourth subtree) scope)))
 ); end Expression
+
+(defn Parameter [subtree scope]
+  (ret-print "Parameter")
+  (CallByLabel (first (second subtree))(second subtree) scope)
+); end Parameter
+
+(defn ParameterList [subtree scope]
+  (ret-print "ParameterList")
+  (CallByLabel (first (second subtree))(second subtree) scope)
+); end ParameterList
+
+(defn Print [subtree scope]
+  (ret-print "PRINT")
+  (ret-print (CallByLabel (first (third subtree)) (third subtree) scope))
+); end Print
 
 (defn MultipleAssignment [subtree scope]
   (ret-print "Multiple Assignment")
@@ -111,11 +115,6 @@
   (ret-print "RETURN")
   (CallByLabel (first (third subtree))(third subtree) scope)
 ); end Return
-
-(defn Print [subtree scope]
-  (ret-print "PRINT")
-  (ret-print (CallByLabel (first (third subtree)) (third subtree) scope))
-); end Print
 
 (defn Assignment [subtree scope]
   (ret-print "Assignment")
@@ -144,12 +143,10 @@
 
 (defn Program [subtree scope]
   (ret-print "PROGRAM")
-  (if
-    (< 2 (count subtree))
+  (if (< 2 (count subtree))
       ((def tempScope (merge scope (CallByLabel (first (second subtree))(second subtree) scope)))
       (CallByLabel (first (third subtree))(third subtree) tempScope)))
-  (if
-    (>= 2 (count subtree))
+  (if (>= 2 (count subtree))
       (CallByLabel(first(second subtree)) (second subtree)scope))
   (System/exit 0)
 ); end Program
@@ -157,21 +154,14 @@
 (defn interpret-quirk [subtree scope] (CallByLabel (first subtree) subtree {}))
 
 (defn -main [& args]
-  ;sample for reading all stdin
   (def stdin (slurp *in*))
-  ;(ret-print stdin)
-
-  ;(ret-print (first *command-line-args*))
   (if (.equals "-pt" (first *command-line-args*))
-    (def SHOW_PARSE_TREE true)
-  )
+    (def SHOW_PARSE_TREE true))
   (def quirk-parser (insta/parser (slurp "resources/quirk-ebnf") :auto-whitespace :standard))
   (def parse-tree (quirk-parser stdin))
   (if (= true SHOW_PARSE_TREE)
     (ret-print parse-tree)
     (interpret-quirk parse-tree {}))
-  ;(interpret-quirk parse-tree {})
-  ;(ret-print "done!")
-)
+); end Main
 
 (-main)
